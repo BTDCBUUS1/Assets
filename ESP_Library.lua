@@ -133,6 +133,26 @@ local function removeEsp(player)
     cache[player] = nil
 end
 
+local function updateReputation(player)
+    local playerList = localPlayer:FindFirstChild("PlayerGui")
+        and localPlayer.PlayerGui:FindFirstChild("HUD")
+        and localPlayer.PlayerGui.HUD:FindFirstChild("Playerlist")
+        and localPlayer.PlayerGui.HUD.Playerlist:FindFirstChild("List")
+
+    if playerList then
+        local playerFrame = playerList:FindFirstChild(player.Name)
+        if playerFrame then
+            local reputationLabel = playerFrame:FindFirstChild("Reputation")
+            if reputationLabel and reputationLabel:IsA("TextLabel") then
+                return "Rep: " .. reputationLabel.Text
+            else
+                return "Rep: ???"
+            end
+        end
+    end
+    return "Rep: ???" -- In case of failure
+end
+
 local function updateEsp()
     for player, esp in pairs(cache) do
         local character, team = player.Character, player.Team
@@ -278,8 +298,8 @@ local function updateEsp()
                     end
 
                     if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
-                        local distance = (camera.CFrame.p - rootPart.Position).Magnitude
-                        esp.distance.Text = string.format("%.1f studs", distance)
+                        local rep = updateReputation(player)  -- Call to get the reputation tex
+                        esp.distance.Text = string.format(rep)
                         esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
                         esp.distance.Visible = true
                     else
