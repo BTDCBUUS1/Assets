@@ -313,4 +313,6 @@ Players.PlayerAdded:Connect(createEsp)
 Players.PlayerRemoving:Connect(removeEsp)
 RunService.RenderStepped:Connect(updateEsp)
 
+print("1")
+
 return ESP_SETTINGS
