@@ -57,6 +57,9 @@ function a.On(B)
     for f,C in pairs(n)do
         l(b,f,B and C.q or C.p)
     end
+    if not B then
+        a.Noclip(false)
+    end
 end
 
 a.NoclipEnabled=false
@@ -75,4 +78,17 @@ function a.Noclip(E)
 end
 
 a.On(false)
+
+function a.Reset()
+    for f,C in pairs(v)do
+        l(f,"Material",C.y)
+        l(f,"Reflectance",C.z)
+        l(f,"CastShadow",C.A)
+    end
+    for f,C in pairs(n)do
+        l(b,f,C.p)
+    end
+    a.Noclip(false)
+end
+
 return a
