@@ -1,94 +1,76 @@
-local a={}
-local b=game:GetService("Lighting")
-local c=game:GetService("RunService")
-d={}
-for e,f in pairs(d)do
-    pcall(f.Disconnect,f)
+local a = {}
+local b = game:GetService("Lighting")
+local c = {}
+
+for _, d in pairs(c) do
+    pcall(d.Disconnect, d)
 end
-table.clear(d)
-local function g(h,i)
-    local j,k=pcall(function()
-        return h[i]
+
+table.clear(c)
+
+local function e(f, g)
+    local h, i = pcall(function()
+        return f[g]
     end)
-    return j and k or nil
+    return h and i or nil
 end
-local function l(h,i,m)
+
+local function j(f, g, k)
     return pcall(function()
-        h[i]=m
+        f[g] = k
     end)
 end
-n={
-    o={p=g(b,"GlobalShadows"),q=false},
-    r={p=g(b,"ShadowSoftness"),q=0},
-    s={p=g(b,"Technology"),q=Enum.Technology.Voxel},
-    t={p=g(b,"FogEnd"),q=9e9},
-    u={p=g(b,"FogStart"),q=9e9}
+
+local l = {
+    GlobalShadows = { Original = e(b, "GlobalShadows"), SwappedVersion = false },
+    ShadowSoftness = { Original = e(b, "ShadowSoftness"), SwappedVersion = 0 },
+    Technology = { Original = e(b, "Technology"), SwappedVersion = Enum.Technology.Voxel },
+    FogEnd = { Original = e(b, "FogEnd"), SwappedVersion = 9e9 },
+    FogStart = { Original = e(b, "FogStart"), SwappedVersion = 9e9 }
 }
-v={}
-local function w(x)
-    if typeof(x)~="Instance"or not x:IsA("BasePart")then return end
-    if v[x]~=nil then return end
-    v[x]={
-        y=g(x,"Material"),
-        z=g(x,"Reflectance"),
-        A=g(x,"CastShadow")
+
+local m = {}
+
+local function n(o)
+    if typeof(o) ~= "Instance" or not o:IsA("BasePart") then return end
+    if m[o] ~= nil then return end
+    
+    m[o] = {
+        Material = e(o, "Material"),
+        Reflectance = e(o, "Reflectance"),
+        CastShadow = e(o, "CastShadow")
     }
 end
-for e,f in pairs(workspace:GetDescendants())do
-    if not f:IsA("BasePart")then continue end
-    w(f)
+
+for _, p in pairs(workspace:GetDescendants()) do
+    if not p:IsA("BasePart") then continue end
+    n(p)
 end
-table.insert(d,workspace.DescendantAdded:Connect(function(f)
-    if not f:IsA("BasePart")then return end
-    w(f)
+
+table.insert(c, workspace.DescendantAdded:Connect(function(p)
+    if not p:IsA("BasePart") then return end
+    n(p)
 end))
-table.insert(d,workspace.DescendantRemoving:Connect(function(f)
-    if not f:IsA("BasePart")then return end
+
+table.insert(c, workspace.DescendantRemoving:Connect(function(p)
+    if not p:IsA("BasePart") then return end
     pcall(function()
-        v[f]=nil
+        m[p] = nil
     end)
 end))
-function a.On(B)
-    for f,C in pairs(v)do
-        l(f,"Material",B and Enum.Material.SmoothPlastic or C.y)
-        l(f,"Reflectance",B and 0 or C.z)
-        l(f,"CastShadow",B and false or C.A)
+
+function a.q(r)
+    for s, t in pairs(m) do
+        j(s, "Material", r and Enum.Material.SmoothPlastic or t.Material)
+        j(s, "Reflectance", r and 0 or t.Reflectance)
+        j(s, "CastShadow", r and false or t.CastShadow)
     end
-    for f,C in pairs(n)do
-        l(b,f,B and C.q or C.p)
-    end
-    if not B then
-        a.Noclip(false)
+    
+    for u, v in pairs(l) do
+        j(b, u, r and v.SwappedVersion or v.Original)
     end
 end
 
-a.NoclipEnabled=false
-table.insert(d,c.Stepped:Connect(function()
-    if a.NoclipEnabled then
-        for _,D in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-            if D:IsA("BasePart") then
-                D.CanCollide=false
-            end
-        end
-    end
-end))
-
-function a.Noclip(E)
-    a.NoclipEnabled=E
-end
-
-a.On(false)
-
-function a.Reset()
-    for f,C in pairs(v)do
-        l(f,"Material",C.y)
-        l(f,"Reflectance",C.z)
-        l(f,"CastShadow",C.A)
-    end
-    for f,C in pairs(n)do
-        l(b,f,C.p)
-    end
-    a.Noclip(false)
-end
+a.q(s)
 
 return a
