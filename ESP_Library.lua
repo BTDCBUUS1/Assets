@@ -47,6 +47,7 @@ local ESP_SETTINGS = {
     TracerThickness = 2,
     SkeletonsColor = Color3.new(1, 1, 1),
     TracerPosition = "Bottom",
+    Skeleton = false,
 }
 
 local function create(class, properties)
@@ -423,11 +424,126 @@ Players.PlayerAdded:Connect(function(player)
 end)
 
 Players.PlayerRemoving:Connect(function(player)
-    removeEsp(player)
+    pcall(function()
+        removeEsp(player)
+    end)
 end)
 
 RunService.RenderStepped:Connect(updateEsp)
 
-print("UPDATED v2")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local ESPStorage = {}
+local ESPConnection = nil
+
+local function createLine()
+    local line = Drawing.new("Line")
+    line.Visible = false
+    line.Color = Color3.fromRGB(255, 0, 0)
+    line.Thickness = 4
+    line.Transparency = 1
+    return line
+end
+
+local function clearESP()
+    for _, lines in pairs(ESPStorage) do
+        for _, line in pairs(lines) do
+            line:Remove()
+        end
+    end
+    ESPStorage = {}
+end
+
+local function updateESP()
+    if not ESP_SETTINGS.Skeleton then
+        clearESP()
+        return
+end
+
+    for player, lines in pairs(ESPStorage) do
+        if not Players:FindFirstChild(player.Name) or not player.Character or not player.Character:FindFirstChild("Humanoid") then
+            for _, line in pairs(lines) do
+                line:Remove()
+            end
+            ESPStorage[player] = nil
+        end
+    end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+            local character = player.Character
+            local head = character:FindFirstChild("Head")
+            local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("HumanoidRootPart")
+            local leftUpperArm = character:FindFirstChild("LeftUpperArm")
+            local leftLowerArm = character:FindFirstChild("LeftLowerArm")
+            local leftHand = character:FindFirstChild("LeftHand")
+            local rightUpperArm = character:FindFirstChild("RightUpperArm")
+            local rightLowerArm = character:FindFirstChild("RightLowerArm")
+            local rightHand = character:FindFirstChild("RightHand")
+            local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
+            local leftLowerLeg = character:FindFirstChild("LeftLowerLeg")
+            local leftFoot = character:FindFirstChild("LeftFoot")
+            local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
+            local rightLowerLeg = character:FindFirstChild("RightLowerLeg")
+            local rightFoot = character:FindFirstChild("RightFoot")
+
+            if not ESPStorage[player] then
+                ESPStorage[player] = {
+                    headTorso = createLine(),
+                    torsoLeftUpperArm = createLine(),
+                    leftUpperLowerArm = createLine(),
+                    leftLowerHand = createLine(),
+                    torsoRightUpperArm = createLine(),
+                    rightUpperLowerArm = createLine(),
+                    rightLowerHand = createLine(),
+                    torsoLeftUpperLeg = createLine(),
+                    leftUpperLowerLeg = createLine(),
+                    leftLowerFoot = createLine(),
+                    torsoRightUpperLeg = createLine(),
+                    rightUpperLowerLeg = createLine(),
+                    rightLowerFoot = createLine()
+                }
+            end
+
+            local function updateLine(line, part1, part2)
+                if part1 and part2 then
+                    local screenPos1, onScreen1 = Camera:WorldToViewportPoint(part1.Position)
+                    local screenPos2, onScreen2 = Camera:WorldToViewportPoint(part2.Position)
+
+                    if onScreen1 and onScreen2 then
+                        line.Visible = true
+                        line.From = Vector2.new(screenPos1.X, screenPos1.Y)
+                        line.To = Vector2.new(screenPos2.X, screenPos2.Y)
+                    else
+                        line.Visible = false
+                    end
+                else
+                    line.Visible = false
+                end
+            end
+
+            local lines = ESPStorage[player]
+            updateLine(lines.headTorso, head, torso)
+            updateLine(lines.torsoLeftUpperArm, torso, leftUpperArm)
+            updateLine(lines.leftUpperLowerArm, leftUpperArm, leftLowerArm)
+            updateLine(lines.leftLowerHand, leftLowerArm, leftHand)
+            updateLine(lines.torsoRightUpperArm, torso, rightUpperArm)
+            updateLine(lines.rightUpperLowerArm, rightUpperArm, rightLowerArm)
+            updateLine(lines.rightLowerHand, rightLowerArm, rightHand)
+            updateLine(lines.torsoLeftUpperLeg, torso, leftUpperLeg)
+            updateLine(lines.leftUpperLowerLeg, leftUpperLeg, leftLowerLeg)
+            updateLine(lines.leftLowerFoot, leftLowerLeg, leftFoot)
+            updateLine(lines.torsoRightUpperLeg, torso, rightUpperLeg)
+            updateLine(lines.rightUpperLowerLeg, rightUpperLeg, rightLowerLeg)
+            updateLine(lines.rightLowerFoot, rightLowerLeg, rightFoot)
+        end
+    end
+end
+
+if ESPConnection then ESPConnection:Disconnect() end
+ESPConnection = RunService.RenderStepped:Connect(updateESP)
 
 return ESP_SETTINGS
