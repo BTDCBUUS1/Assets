@@ -49,6 +49,7 @@ local function createEsp(player)
         health = create("Line", { Thickness = 1 }),
         distance = create("Text", { Color = Color3.new(1, 1, 1), Size = 12, Outline = true, Center = true }),
         skeleton = {}, -- Store skeleton lines
+        boxLines = {}, -- Initialize boxLines table
     }
 
     -- Skeleton lines setup
