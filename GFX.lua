@@ -59,7 +59,11 @@ table.insert(c, workspace.DescendantRemoving:Connect(function(p)
     end)
 end))
 
+local isEnabled = false
+
 function a.q(r)
+    isEnabled = not isEnabled if r == nil then r = isEnabled end
+
     for s, t in pairs(m) do
         j(s, "Material", r and Enum.Material.SmoothPlastic or t.Material)
         j(s, "Reflectance", r and 0 or t.Reflectance)
@@ -71,6 +75,6 @@ function a.q(r)
     end
 end
 
-a.q(s)
+a.q()
 
 return a
