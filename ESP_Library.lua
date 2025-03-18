@@ -297,7 +297,7 @@ local function updateEsp()
                     end
 
                     if ESP_SETTINGS.ShowDistance and ESP_SETTINGS.Enabled then
-                        local rep = updateReputation(player)  -- Call to get the reputation tex
+                        local rep = updateReputation(player)
                         esp.distance.Text = string.format(rep)
                         esp.distance.Position = Vector2.new(boxPosition.X + boxSize.X / 2, boxPosition.Y + boxSize.Y + 5)
                         esp.distance.Visible = true
@@ -422,13 +422,11 @@ Players.PlayerAdded:Connect(function(player)
 end)
 
 Players.PlayerRemoving:Connect(function(player)
-    removeEsp(player)
-
-
+    pcall(function()
+        removeEsp(player)
+    end)
 end)
 
 RunService.RenderStepped:Connect(updateEsp)
-
-print("UPDATED v2")
 
 return ESP_SETTINGS
