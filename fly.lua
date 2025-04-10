@@ -61,7 +61,7 @@ end)
 
 _0x7g8h9i.InputBegan:connect(function(_0xu, _0xv)
     if _0xv then return end
-    if _0xu.KeyCode == Enum.KeyCode.F and getgenv().Fly then
+    if _0xu.KeyCode == Enum.KeyCode[getgenv().Key] and getgenv().Fly then
         _0x1a2b3c = not _0x1a2b3c
         if _0x1a2b3c then
             _0x7g8h9i.MouseBehavior = Enum.MouseBehavior.LockCenter
