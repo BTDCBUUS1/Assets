@@ -4,6 +4,8 @@ local _0x7g8h9i = game.UserInputService
 local _0x0a1b2c = game.Players.LocalPlayer
 local _0x3d4e5f = _0x0a1b2c:GetMouse()
 
+getgenv().Key = "F"
+
 local function _0x6g7h8i(_0xa, _0xb, _0xc)
     local _0xd = (_0xb - _0xa)
     local _0xe = _0xd.Magnitude
